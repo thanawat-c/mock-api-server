@@ -1,0 +1,36 @@
+# Environment variables (Crucial: Protect DB credentials)
+.env
+.env.*
+!.env.example
+*.env
+
+# Operating System
+.DS_Store
+Thumbs.db
+
+# IDE & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node & Frontend
+node_modules/
+.nuxt/
+.output/
+.data/
+.nitro/
+.cache/
+dist/
+
+# Go / Backend binaries
+backend/bin/
+backend/main
+backend/api
+*.exe
+*.test
+*.out
+
+# Logs
+logs/
+*.log
