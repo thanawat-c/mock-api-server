@@ -17,9 +17,12 @@ func ConnectDatabase() {
 		log.Fatal("❌ ไม่พบค่า DB_URL ในไฟล์ .env")
 	}
 
-	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+	database, err := gorm.Open(postgres.New(postgres.Config{
+		DSN:                  dsn,
+		PreferSimpleProtocol: true, // Disables prepared statements (Essential for Supabase Transaction Pooler 6543)
+	}), &gorm.Config{
 		SkipDefaultTransaction: true,
-		PrepareStmt:            false, // Supabase Transaction Pooler (port 6543) works best with PrepareStmt=false
+		PrepareStmt:            false,
 	})
 	if err != nil {
 		log.Fatal("❌ เชื่อมต่อ Database ไม่สำเร็จ: ", err)
@@ -32,9 +35,8 @@ func ConnectDatabase() {
 		sqlDB.SetMaxOpenConns(50)
 	}
 
-	err = database.AutoMigrate(&models.Endpoint{}, &models.MockRecord{})
-	if err != nil {
-		log.Fatal("❌ อัปเกรด Database ไม่สำเร็จ: ", err)
+	if err := database.AutoMigrate(&models.Endpoint{}, &models.MockRecord{}); err != nil {
+		log.Println("⚠️ AutoMigrate warning: ", err)
 	}
 
 	DB = database
