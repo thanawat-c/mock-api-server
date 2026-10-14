@@ -47,15 +47,18 @@ func CreateEndpoint(endpoint *models.Endpoint, count int) error {
 			count = 5
 		}
 
+		records := make([]models.MockRecord, 0, count)
 		for i := 0; i < count; i++ {
 			mock := GenerateMockData(endpoint.Schema)
-
-			record := models.MockRecord{
+			records = append(records, models.MockRecord{
 				EndpointID: endpoint.ID,
 				Data:       mock,
-			}
+			})
+		}
 
-			if err := config.DB.Create(&record).Error; err != nil {
+		// ⚡ Batch Insert: ยิง SQL บันทึกทั้งก้อนในคำสั่งเดียว ไม่ต้องต่อคิววนลูป
+		if len(records) > 0 {
+			if err := config.DB.Create(&records).Error; err != nil {
 				return err
 			}
 		}
@@ -121,17 +124,20 @@ func ResetEndpointRecords(endpointID string) ([]models.MockRecord, error) {
 	}
 
 	count := 5
-	var newRecords []models.MockRecord
+	newRecords := make([]models.MockRecord, 0, count)
 	for i := 0; i < count; i++ {
 		mock := GenerateMockData(endpoint.Schema)
-		record := models.MockRecord{
+		newRecords = append(newRecords, models.MockRecord{
 			EndpointID: endpoint.ID,
 			Data:       mock,
-		}
-		if err := config.DB.Create(&record).Error; err != nil {
+		})
+	}
+
+	// ⚡ Batch Insert ทีเดียว
+	if len(newRecords) > 0 {
+		if err := config.DB.Create(&newRecords).Error; err != nil {
 			return nil, err
 		}
-		newRecords = append(newRecords, record)
 	}
 
 	return newRecords, nil
