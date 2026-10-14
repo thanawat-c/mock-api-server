@@ -4,6 +4,9 @@ A modern, fast, and self-hosted **Full RESTful Mock API Server** built with **Go
 
 Allows Frontend & Mobile developers to build, test, and prototype UIs immediately without waiting for the Backend team to implement APIs.
 
+> 🇹🇭 **สรุปโปรเจกต์ (Project Overview):**  
+> แพลตฟอร์มจำลอง RESTful Mock API แบบ Self-hosted ที่พัฒนาด้วย Go (Gin) และ Nuxt 3 ช่วยให้นักพัฒนาฝั่ง Frontend และ Mobile สามารถสร้าง Mock Endpoints, กำหนด Schema, สุ่มข้อมูลจำลองด้วย Faker, และทดสอบยิง API ได้ทันทีแบบไม่ต้องรอ Backend พร้อมรองรับการจำลอง Network Latency, HTTP Status, Custom Headers ตลอดจน Import/Export ข้อมูลด้วย JSON
+
 ---
 
 ## ✨ Features
