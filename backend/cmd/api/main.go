@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -11,9 +12,9 @@ import (
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("❌ ไม่พบไฟล์ .env")
+	// Load .env if present (on cloud hosts, env vars are injected directly)
+	if err := godotenv.Load(); err != nil {
+		log.Println("ℹ️ ไม่พบไฟล์ .env ใช้ Environment Variables จากระบบ")
 	}
 
 	//connect db
@@ -22,17 +23,22 @@ func main() {
 	// gin
 	r := gin.Default()
 
-	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"http://localhost:3000", "http://localhost:3001"},
-		AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders: []string{"Content-Type", "Authorization", "Origin", "x-mock-status"},
+	corsConfig := cors.Config{
+		AllowAllOrigins:  true,
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"},
+		AllowHeaders:     []string{"*"},
 		ExposeHeaders:    []string{"*"},
-		AllowCredentials: true,
-		MaxAge: 86400,
-	}))
+		AllowCredentials: false, // Must be false when AllowAllOrigins is true
+		MaxAge:           86400,
+	}
+	r.Use(cors.New(corsConfig))
 
 	//endpoint
 	routes.SetupRoutes(r)
 
-	r.Run(":8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	r.Run(":" + port)
 }

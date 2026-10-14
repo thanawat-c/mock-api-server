@@ -10,10 +10,10 @@ export default defineNuxtConfig({
     '@element-plus/nuxt',
   ],
 
-  // Proxy API requests to Go backend
+  // Proxy API requests to Go backend (defaults to localhost:8080 or BACKEND_URL env)
   routeRules: {
-    '/api/**': { proxy: 'http://localhost:8080/api/**' },
-    '/mock/**': { proxy: 'http://localhost:8080/mock/**' }
+    '/api/**': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8080'}/api/**` },
+    '/mock/**': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8080'}/mock/**` }
   },
 
   css: [
