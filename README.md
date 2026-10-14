@@ -7,6 +7,8 @@ Allows Frontend & Mobile developers to build, test, and prototype UIs immediatel
 > 🇹🇭 **สรุปโปรเจกต์ (Project Overview):**  
 > แพลตฟอร์มจำลอง RESTful Mock API แบบ Self-hosted ที่พัฒนาด้วย Go (Gin) และ Nuxt 3 ช่วยให้นักพัฒนาฝั่ง Frontend และ Mobile สามารถสร้าง Mock Endpoints, กำหนด Schema, สุ่มข้อมูลจำลองด้วย Faker, และทดสอบยิง API ได้ทันทีแบบไม่ต้องรอ Backend พร้อมรองรับการจำลอง Network Latency, HTTP Status, Custom Headers ตลอดจน Import/Export ข้อมูลด้วย JSON
 
+🔗 **Live Demo:** [https://mock-api-server-drab.vercel.app](https://mock-api-server-drab.vercel.app)
+
 ---
 
 ## ✨ Features
