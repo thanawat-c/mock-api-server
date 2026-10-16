@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	handlers "github.com/kan/mock-api/internal/Handlers"
+	"github.com/kan/mock-api/internal/handlers"
 )
 
 func SetupRoutes(r *gin.Engine) {
