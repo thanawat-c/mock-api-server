@@ -8,8 +8,8 @@ import (
 )
 
 type SchemaField struct {
-    Name string `json:"name"`
-    Type string `json:"type"`
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
 
 func GenerateMockData(schemaJSON datatypes.JSON) datatypes.JSON {
@@ -81,61 +81,61 @@ func GenerateMockData(schemaJSON datatypes.JSON) datatypes.JSON {
 
 func GenerateSingleFakeValue(fakerType string) interface{} {
 	switch fakerType {
-		case "faker.name":
-			return gofakeit.Name()
-		case "faker.first_name":
-			return gofakeit.FirstName()
-		case "faker.last_name":
-			return gofakeit.LastName()
-		case "faker.email":
-			return gofakeit.Email()
-		case "faker.phone":
-			return gofakeit.Phone()
-		case "faker.gender":
-			return gofakeit.Gender()
+	case "faker.name":
+		return gofakeit.Name()
+	case "faker.first_name":
+		return gofakeit.FirstName()
+	case "faker.last_name":
+		return gofakeit.LastName()
+	case "faker.email":
+		return gofakeit.Email()
+	case "faker.phone":
+		return gofakeit.Phone()
+	case "faker.gender":
+		return gofakeit.Gender()
 
-		case "faker.int":
-			return gofakeit.Number(1, 1000)
-		case "faker.price":
-			return gofakeit.Price(10, 5000)
-		case "faker.boolean":
-			return gofakeit.Bool()
+	case "faker.int":
+		return gofakeit.Number(1, 1000)
+	case "faker.price":
+		return gofakeit.Price(10, 5000)
+	case "faker.boolean":
+		return gofakeit.Bool()
 
-		case "faker.image", "faker.avatar":
-			return "https://i.pravatar.cc/300?u=" + gofakeit.UUID()
+	case "faker.image", "faker.avatar":
+		return "https://i.pravatar.cc/300?u=" + gofakeit.UUID()
 
-		case "faker.sentence":
-			return gofakeit.Sentence(6)
-		case "faker.paragraph":
-			return gofakeit.Paragraph(2, 3, 5, " ")
+	case "faker.sentence":
+		return gofakeit.Sentence(6)
+	case "faker.paragraph":
+		return gofakeit.Paragraph(2, 3, 5, " ")
 
-		case "faker.city":
-			return gofakeit.City()
-		case "faker.country":
-			return gofakeit.Country()
-		case "faker.street":
-			return gofakeit.Street()
-		case "faker.zip":
-			return gofakeit.Zip()
+	case "faker.city":
+		return gofakeit.City()
+	case "faker.country":
+		return gofakeit.Country()
+	case "faker.street":
+		return gofakeit.Street()
+	case "faker.zip":
+		return gofakeit.Zip()
 
-		case "faker.product_name":
-			return gofakeit.ProductName()
-		case "faker.company":
-			return gofakeit.Company()
+	case "faker.product_name":
+		return gofakeit.ProductName()
+	case "faker.company":
+		return gofakeit.Company()
 
-		case "faker.date":
-			return gofakeit.Date().Format("2006-01-02")
-		case "faker.uuid":
-			return gofakeit.UUID()
+	case "faker.date":
+		return gofakeit.Date().Format("2006-01-02")
+	case "faker.uuid":
+		return gofakeit.UUID()
 
-		default:
-			return fakerType
-		}
+	default:
+		return fakerType
+	}
 }
 
 func SyncRecordWithSchema(currentDataJSON datatypes.JSON, newSchemaJSON datatypes.JSON) datatypes.JSON {
 	var currentData map[string]interface{}
-	var newSchema []SchemaField 
+	var newSchema []SchemaField
 
 	json.Unmarshal(currentDataJSON, &currentData)
 	json.Unmarshal(newSchemaJSON, &newSchema)

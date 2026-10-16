@@ -1,6 +1,6 @@
 <template>
   <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-    <el-spinner class="w-10 h-10 text-blue-600 mb-4" />
+    <Loader2 class="w-10 h-10 text-blue-600 animate-spin mb-4" />
     <p class="text-gray-500">Loading endpoint details...</p>
   </div>
   
@@ -470,7 +470,7 @@ import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useEndpointStore } from '~/stores/endpointStore'
 import SchemaBuilder from '~/components/endpoint/SchemaBuilder.vue'
-import { ArrowLeft, Copy, ExternalLink, Terminal, Database, Settings, RefreshCw, Plus, Pencil, Trash2, Play, Send, CheckCircle2, AlertCircle, RotateCcw, BookOpen, Code2, Download } from 'lucide-vue-next'
+import { ArrowLeft, Copy, ExternalLink, Terminal, Database, Settings, RefreshCw, Plus, Pencil, Trash2, Play, Send, CheckCircle2, AlertCircle, RotateCcw, BookOpen, Code2, Download, Loader2 } from 'lucide-vue-next'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useClipboard } from '@vueuse/core'
 

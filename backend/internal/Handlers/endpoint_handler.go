@@ -28,7 +28,7 @@ type CreateEndpointInput struct {
 	Count   int            `json:"count"`
 }
 
-func GetAllEndpoints(c * gin.Context) {
+func GetAllEndpoints(c *gin.Context) {
 	res, err := services.GetAllEndpoints()
 
 	if err != nil {
@@ -40,11 +40,11 @@ func GetAllEndpoints(c * gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Get all endpoints successfully",
-		"data": res,
+		"data":    res,
 	})
 }
 
-func GetEndpointById(c * gin.Context){
+func GetEndpointById(c *gin.Context) {
 	id := c.Param("id")
 
 	rec, err := services.GetEndpointById(id)
@@ -62,7 +62,7 @@ func GetEndpointById(c * gin.Context){
 	})
 }
 
-func CreateEndpoint( c *gin.Context) {
+func CreateEndpoint(c *gin.Context) {
 	var endpoint CreateEndpointInput
 
 	if err := c.ShouldBindJSON(&endpoint); err != nil {
@@ -79,7 +79,7 @@ func CreateEndpoint( c *gin.Context) {
 		Headers: endpoint.Headers,
 		Schema:  endpoint.Schema,
 	}
-	
+
 	if err := services.CreateEndpoint(&ep, endpoint.Count); err != nil {
 		if strings.Contains(err.Error(), "duplicate key value") {
 			c.JSON(http.StatusConflict, gin.H{

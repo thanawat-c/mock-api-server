@@ -10,7 +10,7 @@ func GetMockRecordByPath(path string) ([]models.MockRecord, error) {
 	var endpoint models.Endpoint
 
 	err := config.DB.Where("path = ?", path).Order("id asc").First(&endpoint).Error
-	if	err != nil {
+	if err != nil {
 		return nil, err
 	}
 
@@ -28,7 +28,7 @@ func GetMockRecordByPath(path string) ([]models.MockRecord, error) {
 func CreateMockRecord(endpointID uint, data datatypes.JSON) (*models.MockRecord, error) {
 	record := models.MockRecord{
 		EndpointID: endpointID,
-		Data: data,
+		Data:       data,
 	}
 
 	err := config.DB.Create(&record).Error

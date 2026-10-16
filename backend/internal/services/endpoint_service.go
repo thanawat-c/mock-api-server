@@ -5,7 +5,7 @@ import (
 	"github.com/kan/mock-api/internal/models"
 )
 
-func GetAllEndpoints() ([]models.Endpoint, error){
+func GetAllEndpoints() ([]models.Endpoint, error) {
 	var endpoints []models.Endpoint
 
 	if err := config.DB.Find(&endpoints).Error; err != nil {
@@ -20,20 +20,19 @@ type EndpointDetail struct {
 	Record []models.MockRecord `json:"records"`
 }
 
-func GetEndpointById(id string) (EndpointDetail, error){
+func GetEndpointById(id string) (EndpointDetail, error) {
 	var endpoint EndpointDetail
-	
-	if err := config.DB.Where("id = ?", id).First(&endpoint.Endpoint).Error; err !=nil {
+
+	if err := config.DB.Where("id = ?", id).First(&endpoint.Endpoint).Error; err != nil {
 		return endpoint, err
 	}
 
-	if err := config.DB.Where("endpoint_id = ?",id).Order("id asc").Find(&endpoint.Record).Error; err != nil {
+	if err := config.DB.Where("endpoint_id = ?", id).Order("id asc").Find(&endpoint.Record).Error; err != nil {
 		return endpoint, err
 	}
 
 	return endpoint, nil
 }
-	
 
 func CreateEndpoint(endpoint *models.Endpoint, count int) error {
 	if err := config.DB.Create(endpoint).Error; err != nil {
@@ -102,12 +101,12 @@ func UpdateEndpoint(id string, updatedata *models.Endpoint, count int) error {
 
 	for _, rec := range records {
 		rec.Data = SyncRecordWithSchema(rec.Data, existingendpoint.Schema)
-		
+
 		if err := config.DB.Save(&rec).Error; err != nil {
 			return err
 		}
 	}
-	
+
 	return nil
 }
 

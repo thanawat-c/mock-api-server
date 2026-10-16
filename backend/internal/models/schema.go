@@ -16,10 +16,9 @@ type Endpoint struct {
 }
 
 type MockRecord struct {
-	ID uint `gorm:"primaryKey" json:"id"`
-	EndpointID uint `gorm:"index;not null" json:"endpoint_id"`
-	Data datatypes.JSON `gorm:"type:jsonb" json:"data"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID         uint           `gorm:"primaryKey" json:"id"`
+	EndpointID uint           `gorm:"index;not null" json:"endpoint_id"`
+	Data       datatypes.JSON `gorm:"type:jsonb" json:"data"`
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
-
