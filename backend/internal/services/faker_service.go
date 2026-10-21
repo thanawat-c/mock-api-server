@@ -146,7 +146,6 @@ func SyncRecordWithSchema(currentDataJSON datatypes.JSON, newSchemaJSON datatype
 
 	validKeys := make(map[string]bool)
 
-	// วนลูปดู Schema ใหม่ ถ้าใน Record ปัจจุบันยังไม่มีคีย์นั้น ให้สุ่มค่าเติมเข้าไป
 	for _, field := range newSchema {
 		validKeys[field.Name] = true
 		if _, exists := currentData[field.Name]; !exists {
@@ -164,7 +163,6 @@ func SyncRecordWithSchema(currentDataJSON datatypes.JSON, newSchemaJSON datatype
 	return datatypes.JSON(resultBytes)
 }
 
-// ValidateRequestBodyWithSchema ตรวจสอบว่า JSON Body ที่ส่งเข้ามามีฟิลด์ครบตาม Schema หรือไม่
 func ValidateRequestBodyWithSchema(bodyJSON datatypes.JSON, schemaJSON datatypes.JSON) []string {
 	var schema []SchemaField
 	if err := json.Unmarshal(schemaJSON, &schema); err != nil || len(schema) == 0 {

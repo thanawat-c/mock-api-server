@@ -181,7 +181,6 @@ const submit = async () => {
     return
   }
 
-  // Convert headerList to Record<string, string>
   const customHeaders: Record<string, string> = {}
   headerList.value.forEach(h => {
     if (h.key.trim()) {
@@ -199,7 +198,6 @@ const submit = async () => {
       navigateTo('/')
     }
   } catch (error) {
-    // handled in store
   } finally {
     loading.value = false
   }

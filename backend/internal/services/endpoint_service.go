@@ -39,8 +39,6 @@ func CreateEndpoint(endpoint *models.Endpoint, count int) error {
 		return err
 	}
 
-	// ถ้าเป็น GET ให้สุ่ม Mock Data เริ่มต้นตาม count (default 5)
-	// ถ้าเป็น POST/PUT/DELETE ให้เริ่มต้นเป็น 0 แถว รอให้ผู้ใช้ยิงข้อมูลเข้ามาเอง
 	if endpoint.Method == "GET" {
 		if count <= 0 {
 			count = 5
@@ -55,7 +53,6 @@ func CreateEndpoint(endpoint *models.Endpoint, count int) error {
 			})
 		}
 
-		// ⚡ Batch Insert: ยิง SQL บันทึกทั้งก้อนในคำสั่งเดียว ไม่ต้องต่อคิววนลูป
 		if len(records) > 0 {
 			if err := config.DB.Create(&records).Error; err != nil {
 				return err
@@ -110,14 +107,12 @@ func UpdateEndpoint(id string, updatedata *models.Endpoint, count int) error {
 	return nil
 }
 
-// ResetEndpointRecords ลบข้อมูลเดิมทั้งหมดแล้วสุ่ม Mock Data เริ่มต้นขึ้นมาใหม่ตาม Schema
 func ResetEndpointRecords(endpointID string) ([]models.MockRecord, error) {
 	var endpoint models.Endpoint
 	if err := config.DB.First(&endpoint, endpointID).Error; err != nil {
 		return nil, err
 	}
 
-	// ลบข้อมูล Record เดิมทั้งหมดของ Endpoint นี้
 	if err := config.DB.Where("endpoint_id = ?", endpoint.ID).Delete(&models.MockRecord{}).Error; err != nil {
 		return nil, err
 	}
@@ -132,7 +127,6 @@ func ResetEndpointRecords(endpointID string) ([]models.MockRecord, error) {
 		})
 	}
 
-	// ⚡ Batch Insert ทีเดียว
 	if len(newRecords) > 0 {
 		if err := config.DB.Create(&newRecords).Error; err != nil {
 			return nil, err

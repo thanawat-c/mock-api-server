@@ -180,7 +180,6 @@ const exportEndpoints = () => {
     return
   }
 
-  // Format the endpoints for export
   const exportData = store.endpoints.map(ep => ({
     path: ep.path,
     method: ep.method,
@@ -222,7 +221,6 @@ const getMethodColor = (method: string) => {
 const { copy, copied } = useClipboard()
 
 const copyUrl = async (path: string) => {
-  // Construct the full URL
   const url = `${window.location.origin}/mock${path.startsWith('/') ? path : '/' + path}`
   try {
     await copy(url)
@@ -248,7 +246,6 @@ const confirmDelete = (id: string) => {
     try {
       await store.deleteEndpoint(id)
     } catch (e) {
-      // Error is handled in store
     }
   }).catch(() => {})
 }

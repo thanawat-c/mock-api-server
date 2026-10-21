@@ -81,11 +81,9 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: SchemaField[]): void
 }>()
 
-// Local type to include unique id for drag and drop
 type LocalField = { _id: string, name: string, type: string }
 const fields = ref<LocalField[]>([])
 
-// Initialize from props if needed
 watch(() => props.modelValue, (newVal) => {
   if (Array.isArray(newVal) && fields.value.length === 0) {
     fields.value = newVal.map((field) => ({ 
@@ -96,7 +94,6 @@ watch(() => props.modelValue, (newVal) => {
   }
 }, { immediate: true })
 
-// Watch for changes and emit back as Array
 watch(fields, (newFields) => {
   const schema: SchemaField[] = newFields
     .filter(f => f.name && f.type)

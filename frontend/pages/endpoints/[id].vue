@@ -509,7 +509,6 @@ const removeEditHeader = (index: number) => {
   editHeaderList.value.splice(index, 1)
 }
 
-// Sync edit form when endpoint loads
 watch(endpoint, (newVal) => {
   if (newVal) {
     editForm.value = {
@@ -581,7 +580,7 @@ const exportSingleEndpoint = () => {
   
   const link = document.createElement('a')
   link.href = url
-  const cleanName = endpoint.value.path.replace(/\//g, '_').replace(/^_/, '')
+  const cleanName = endpoint.value.path.replace(/\
   link.download = `mock-endpoint-${cleanName || 'api'}.json`
   document.body.appendChild(link)
   link.click()
@@ -607,7 +606,6 @@ const saveSchema = async () => {
     })
     activeTab.value = 'data'
   } catch (error) {
-    // Error handled in store
   } finally {
     isUpdating.value = false
   }
@@ -625,7 +623,6 @@ const formatDate = (dateStr?: string) => {
   }).format(date)
 }
 
-// Record CRUD logic
 const handleAddRecord = async () => {
   await store.addRecord(id)
 }
@@ -651,7 +648,6 @@ const isSavingRecord = ref(false)
 
 const openEditRecordDialog = (row: any) => {
   currentEditRecordId.value = row.id
-  // Create a deep copy of the record data
   editRecordForm.value = JSON.parse(JSON.stringify(row.data || {}))
   editRecordDialogVisible.value = true
 }
@@ -663,7 +659,6 @@ const submitEditRecord = async () => {
     await store.updateRecord(currentEditRecordId.value, { data: editRecordForm.value })
     editRecordDialogVisible.value = false
   } catch (error) {
-    // Handled in store
   } finally {
     isSavingRecord.value = false
   }
@@ -681,11 +676,9 @@ const handleDeleteRecord = (row: any) => {
   ).then(async () => {
     await store.deleteRecord(row.id)
   }).catch(() => {
-    // Cancelled
   })
 }
 
-// Test Console Logic
 const testMethod = ref('GET')
 const testPath = ref('')
 const currentOrigin = ref('')
@@ -713,7 +706,6 @@ const fillSamplePayload = () => {
   testPayload.value = JSON.stringify(sample, null, 2)
 }
 
-// Auto-fill sample payload & default path/method when endpoint loads
 watch(endpoint, (ep) => {
   if (ep) {
     if (!testPath.value) {
@@ -733,7 +725,6 @@ const sendTestRequest = async () => {
   isSendingTest.value = true
   testResult.value = null
 
-  // Ensure path starts with /
   let targetUrl = testPath.value.trim()
   if (!targetUrl.startsWith('http')) {
     if (!targetUrl.startsWith('/')) {
@@ -781,7 +772,6 @@ const sendTestRequest = async () => {
 
     if (res.ok) {
       ElMessage.success(`${method} request completed successfully!`)
-      // Refresh records to show new/updated/deleted records immediately
       await store.fetchEndpoint(id)
     } else {
       ElMessage.warning(`Server responded with ${res.status}`)
@@ -798,7 +788,6 @@ const sendTestRequest = async () => {
   }
 }
 
-// API Docs Helpers & Snippets
 const copyText = async (text: string, successMsg = 'Copied to clipboard!') => {
   try {
     await copy(text)
@@ -820,7 +809,6 @@ const apiEndpointsDocs = computed(() => {
   const basePath = endpoint.value.path.startsWith('/') ? endpoint.value.path : '/' + endpoint.value.path
   const firstId = endpoint.value.records?.[0]?.id || '1'
 
-  // Generate sample payload
   const sampleObj: Record<string, any> = {}
   if (endpoint.value.schema) {
     endpoint.value.schema.forEach((f: any) => {
@@ -877,26 +865,23 @@ const sampleFetchCode = computed(() => {
   if (!endpoint.value) return ''
   const origin = currentOrigin.value || 'http://localhost:3000'
   const basePath = endpoint.value.path.startsWith('/') ? endpoint.value.path : '/' + endpoint.value.path
-  return `// 1. Fetch all records
+  return `
 fetch('${origin}/mock${basePath}')
   .then(res => res.json())
   .then(data => console.log(data));
 
-// 2. Create new record
 fetch('${origin}/mock${basePath}', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ /* your schema fields */ })
 });
 
-// 3. Update existing record
 fetch('${origin}/mock${basePath}/1', {
   method: 'PUT',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ /* updated fields */ })
 });
 
-// 4. Delete record
 fetch('${origin}/mock${basePath}/1', {
   method: 'DELETE'
 });`

@@ -20,25 +20,20 @@ func HandleMockRequest(c *gin.Context) {
 	cleanParam := "/" + strings.TrimPrefix(rawParam, "/")
 	noSlashParam := strings.TrimPrefix(rawParam, "/")
 
-	// 1. ลองค้นหา Endpoint ที่ตรงกับ Path และ Method ของคำขอ
 	var endpoint models.Endpoint
 	var itemID string = ""
 
-	// ค้นหาแบบตรงทั้ง Path และ Method ก่อน
 	err := config.DB.Where("(path = ? OR path = ?) AND method = ?", cleanParam, noSlashParam, c.Request.Method).First(&endpoint).Error
 	if err != nil {
-		// ถ้าไม่พบ ลองหาแบบมี ID ต่อท้าย เช่น /users/14 (ซึ่ง path ของ endpoint คือ /users)
 		lastSlashIdx := strings.LastIndex(cleanParam, "/")
 		if lastSlashIdx > 0 {
 			basePath := cleanParam[:lastSlashIdx]
 			noSlashBase := strings.TrimPrefix(basePath, "/")
 			candidateID := cleanParam[lastSlashIdx+1:]
 
-			// ตรวจสอบกับ Method ที่ส่งมา
 			if err2 := config.DB.Where("(path = ? OR path = ?) AND method = ?", basePath, noSlashBase, c.Request.Method).First(&endpoint).Error; err2 == nil {
 				itemID = candidateID
 			} else {
-				// หรือถ้าเป็น GET/PUT/DELETE โดยอ้างอิงจาก base path ที่อาจเป็น GET
 				if err3 := config.DB.Where("path = ? OR path = ?", basePath, noSlashBase).First(&endpoint).Error; err3 == nil {
 					itemID = candidateID
 				}
@@ -46,7 +41,6 @@ func HandleMockRequest(c *gin.Context) {
 		}
 	}
 
-	// ถ้ายังไม่พบ endpoint ลองหาตาม Path โดยไม่ฟิกซ์ Method
 	if endpoint.ID == 0 {
 		err = config.DB.Where("path = ? OR path = ?", cleanParam, noSlashParam).First(&endpoint).Error
 	}
@@ -58,7 +52,6 @@ func HandleMockRequest(c *gin.Context) {
 		return
 	}
 
-	// --- 🏷️ 1. จำลอง Custom Response Headers ---
 	if len(endpoint.Headers) > 0 {
 		var headersMap map[string]string
 		if err := json.Unmarshal(endpoint.Headers, &headersMap); err == nil {
@@ -70,12 +63,10 @@ func HandleMockRequest(c *gin.Context) {
 		}
 	}
 
-	// --- ⏱️ 2. จำลอง Response Delay ---
 	if endpoint.Delay > 0 {
 		time.Sleep(time.Duration(endpoint.Delay) * time.Millisecond)
 	}
 
-	// --- 💥 2. จำลอง Custom Status Code จาก Header เช่น x-mock-status: 500 หรือ Query param ?mock_status=401 ---
 	customStatusStr := c.GetHeader("x-mock-status")
 	if customStatusStr == "" {
 		customStatusStr = c.Query("mock_status")
@@ -90,15 +81,12 @@ func HandleMockRequest(c *gin.Context) {
 		}
 	}
 
-	// 2. จัดการคำขอตาม Method
 	switch c.Request.Method {
 	case http.MethodGet:
-		// ถ้ามี itemID ให้ค้นหา Record เฉพาะตัวนั้น
 		if itemID != "" {
 			var record models.MockRecord
 			err := config.DB.Where("endpoint_id = ? AND id = ?", endpoint.ID, itemID).First(&record).Error
 			if err != nil {
-				// ค้นหาใน Data JSON เช่น {"id": itemID}
 				var records []models.MockRecord
 				config.DB.Where("endpoint_id = ?", endpoint.ID).Find(&records)
 				found := false
@@ -121,11 +109,9 @@ func HandleMockRequest(c *gin.Context) {
 			return
 		}
 
-		// ดึงรายการทั้งหมด
 		var records []models.MockRecord
 		config.DB.Where("endpoint_id = ?", endpoint.ID).Order("id asc").Find(&records)
 
-		// --- 🔍 3. Filter & Search ตาม Query Parameters ---
 		queryParams := c.Request.URL.Query()
 		searchQuery := strings.ToLower(queryParams.Get("search"))
 
@@ -137,7 +123,6 @@ func HandleMockRequest(c *gin.Context) {
 				continue
 			}
 
-			// ค้นหาด้วย ?search=... (ค้นหาทุกฟิลด์)
 			if searchQuery != "" {
 				matched := false
 				for _, v := range dataMap {
@@ -151,7 +136,6 @@ func HandleMockRequest(c *gin.Context) {
 				}
 			}
 
-			// กรองตามฟิลด์เฉพาะ เช่น ?name=John หรือ ?email=...
 			fieldMatched := true
 			for qKey, qVals := range queryParams {
 				if qKey == "page" || qKey == "limit" || qKey == "search" || qKey == "mock_status" {
@@ -173,7 +157,6 @@ func HandleMockRequest(c *gin.Context) {
 			filteredRecords = append(filteredRecords, rec.Data)
 		}
 
-		// --- 📄 4. Pagination: ?page=1&limit=10 ---
 		pageStr := c.Query("page")
 		limitStr := c.Query("limit")
 		if pageStr != "" || limitStr != "" {
@@ -217,7 +200,6 @@ func HandleMockRequest(c *gin.Context) {
 			return
 		}
 
-		// ตรวจสอบว่า Body ที่ส่งมา มีฟิลด์ครบตาม Schema หรือไม่
 		if missing := services.ValidateRequestBodyWithSchema(raw, endpoint.Schema); len(missing) > 0 {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error":          "Schema validation failed",
@@ -246,12 +228,10 @@ func HandleMockRequest(c *gin.Context) {
 			return
 		}
 
-		// 1) ถ้าส่ง ID มาต่อท้าย URL ให้ค้นหาและอัปเดต Record นั้น
 		if itemID != "" {
 			var record models.MockRecord
 			err := config.DB.Where("endpoint_id = ? AND id = ?", endpoint.ID, itemID).First(&record).Error
 			if err != nil {
-				// ค้นหาใน Data JSON เช่น {"id": itemID}
 				var records []models.MockRecord
 				config.DB.Where("endpoint_id = ?", endpoint.ID).Find(&records)
 				found := false
@@ -271,7 +251,6 @@ func HandleMockRequest(c *gin.Context) {
 				}
 			}
 
-			// อัปเดตข้อมูล
 			record.Data = raw
 			if err := config.DB.Save(&record).Error; err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -285,14 +264,12 @@ func HandleMockRequest(c *gin.Context) {
 			return
 		}
 
-		// 2) ถ้าไม่ได้ใส่ ID ใน URL แต่ใน Body มีฟิลด์ "id" ให้ค้นหาและอัปเดตแถวที่มี id ตรงกัน
 		var bodyMap map[string]interface{}
 		if jsonErr := json.Unmarshal(raw, &bodyMap); jsonErr == nil && bodyMap["id"] != nil {
 			targetID := fmt.Sprintf("%v", bodyMap["id"])
 			var records []models.MockRecord
 			config.DB.Where("endpoint_id = ?", endpoint.ID).Find(&records)
 			for _, rec := range records {
-				// เช็คทั้ง ID ของตารางใน DB และ "id" ใน Data JSON
 				if fmt.Sprintf("%d", rec.ID) == targetID {
 					rec.Data = raw
 					config.DB.Save(&rec)
@@ -317,7 +294,6 @@ func HandleMockRequest(c *gin.Context) {
 			}
 		}
 
-		// 3) ถ้าไม่มี ID ใดๆ เลย ให้บันทึกเป็น Record ใหม่
 		newRecord, err := services.CreateMockRecord(endpoint.ID, raw)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -331,10 +307,8 @@ func HandleMockRequest(c *gin.Context) {
 
 	case http.MethodDelete:
 		if itemID != "" {
-			// ลบตาม ID
 			res := config.DB.Where("endpoint_id = ? AND id = ?", endpoint.ID, itemID).Delete(&models.MockRecord{})
 			if res.RowsAffected == 0 {
-				// ลองหาใน Data JSON
 				var records []models.MockRecord
 				config.DB.Where("endpoint_id = ?", endpoint.ID).Find(&records)
 				foundID := uint(0)
