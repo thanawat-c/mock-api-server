@@ -580,7 +580,7 @@ const exportSingleEndpoint = () => {
   
   const link = document.createElement('a')
   link.href = url
-  const cleanName = endpoint.value.path.replace(/\
+  const cleanName = endpoint.value.path.replace(/\//g, '_').replace(/^_/, '')
   link.download = `mock-endpoint-${cleanName || 'api'}.json`
   document.body.appendChild(link)
   link.click()
